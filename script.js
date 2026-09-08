@@ -2,16 +2,24 @@ if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
 
-if (!window.location.hash) {
-  window.scrollTo(0, 0);
-  window.addEventListener('load', () => {
-    window.scrollTo(0, 0);
-  }, { once: true });
+const isHomeLocation = () => !window.location.hash || window.location.hash === '#home';
+
+const resetToHome = () => {
+  if (isHomeLocation()) {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }
+};
+
+if (isHomeLocation()) {
+  resetToHome();
+  window.addEventListener('load', resetToHome, { once: true });
+  window.setTimeout(resetToHome, 100);
+  window.setTimeout(resetToHome, 500);
 }
 
 window.addEventListener('pageshow', (event) => {
-  if (event.persisted && !window.location.hash) {
-    window.scrollTo(0, 0);
+  if (event.persisted) {
+    resetToHome();
   }
 });
 
@@ -78,6 +86,20 @@ const prevButton = document.getElementById('prev-question');
 const skipButton = document.getElementById('skip-question');
 const bookingForm = document.getElementById('booking-form');
 const bookingSuccess = document.getElementById('booking-success');
+const backToTop = document.getElementById('back-to-top');
+
+if (backToTop) {
+  const updateBackToTop = () => {
+    backToTop.classList.toggle('is-visible', window.scrollY > 400);
+  };
+
+  window.addEventListener('scroll', updateBackToTop, { passive: true });
+  updateBackToTop();
+  backToTop.addEventListener('click', () => {
+    history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  });
+}
 
 if (questionnaire && bookingForm && questionStep && questionText && questionAnswer && nextButton && prevButton && skipButton) {
   let currentIndex = 0;
