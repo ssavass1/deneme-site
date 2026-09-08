@@ -1,3 +1,20 @@
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+if (!window.location.hash) {
+  window.scrollTo(0, 0);
+  window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+  }, { once: true });
+}
+
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted && !window.location.hash) {
+    window.scrollTo(0, 0);
+  }
+});
+
 const revealItems = document.querySelectorAll('.reveal');
 
 const observer = new IntersectionObserver(
